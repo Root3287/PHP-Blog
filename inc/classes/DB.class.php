@@ -68,7 +68,7 @@ class DB{
 	
 		return false;
 	}
-	public function update($table, $id, $fields) {
+	public function update($table, $id, $fields = array()) {
 		$set = '';
 		$i = 1;
 		foreach ($fields as $name => $value) {

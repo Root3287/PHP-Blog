@@ -1,10 +1,13 @@
 <?php
 $GLOBALS['config'] = array(
+	'config'=> array(
+		'name' => 'Blog'
+	),
 	"mysql" => array(
 		"host" => '127.0.0.1',
 		"user" => 'root',
 		"password" => 'password',
-		"db" => 'auth',
+		"db" => 'blog',
 		"port" => '3306'
 	),
 	"remember" => array(

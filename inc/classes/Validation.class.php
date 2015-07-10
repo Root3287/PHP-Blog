@@ -9,7 +9,7 @@ class Validation{
 			foreach ($rules as$rule =>$rule_value){
 				$value = $source[$item];
 				$item = escape($item);
-				if($rule === 'required' && empty($value)){
+				if($rule === 'required' && empty($value) && null){
 					$this->addError("{$item} is required");
 				}else if(!empty($value)){
 					switch ($rule){
