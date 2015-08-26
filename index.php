@@ -23,6 +23,10 @@ $blog = new Blog();
 				echo Session::flash('error');
 				echo '</div>';
 			}
+			if(!$user->exist()){
+				echo '<div class="alert alert-dismissible alert-info" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>This site uses cookies!</strong><br>These cookies will enhance your experience on this site.</div>';
+				echo '<div class="alert alert-dismissible alert-info" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>Welcome</strong> Guest! Please <a href="pages/login/index.php" class="alert-link">sign in</a> or <a class="alert-link" href="pages/register/index.php">register</a> to use full functions of this site!</div>';
+			}
 		?>
 			<div class="jumbotron">
 				<h1>Hello!</h1>
@@ -124,8 +128,19 @@ $blog = new Blog();
 						</div>
 					</div>
 			<?php
-				}
+				}else if(!$user->isLoggedIn()){
 			?>
+					<div class="panel panel-primary">
+						<div class="panel-heading">
+							<h3 class="panel-title">Quick Login Panel</h3>
+						</div>
+						<div class="panel-body">
+						
+							<a href="pages/login/index.php" class="btn btn-primary">Login</a>
+							<a href="pages/register/index.php" class="btn btn-primary">Register</a>
+						</div>
+					</div>
+			<?php }?>
 			</div>
 		</div>
 

@@ -16,12 +16,6 @@
         
         <li<?php if($page === "post"){?> class="active"<?php } ?>><a href="<?php echo path;?>pages/post/index.php">Posts</a></li>
       </ul>
-      <form class="navbar-form navbar-left" role="search">
-        <div class="form-group">
-          <input class="form-control" placeholder="Search" type="text">
-        </div>
-        <button type="submit" class="btn btn-default">Submit</button>
-      </form>
       <ul class="nav navbar-nav navbar-right">
       	 <li class="dropdown">
           <?php if(!$user->isLoggedIn()){?>
@@ -34,14 +28,15 @@
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><?php echo $user->data()->username;?> <span class="caret"></span></a>
           <ul class="dropdown-menu" role="menu">
             <li><a href="<?php echo path;?>pages/logout/index.php">logout</a></li>
+            <li class="divider"></li>
             <li><a href="<?php echo path;?>pages/user/index.php">UserCP</a></li>
             <?php if($user->hasPermission('Mod')){?>
             <li class="divider"></li>
-            <li><a href="<?php echo path?>pages/mod/index.php">ModCP</a></li>
+            <li><a href="<?php echo path?>pages/user/mod/index.php">ModCP</a></li>
             <?php }
             	if($user->hasPermission('Admin')){?>
             <li class="divider"></li>
-            <li><a href="<?php echo path;?>pages/admin/index.php">AdminCP</a></li>
+            <li><a href="<?php echo path;?>pages/user/admin/index.php">AdminCP</a></li>
             <?php }?>
           </ul>
           <?php }?>

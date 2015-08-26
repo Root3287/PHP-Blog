@@ -2,7 +2,7 @@
 					<h3>Admin</h3>
 					<ul class="nav nav-list">
 						<li class="nav nav-header">
-							<b>categories</b>
+							<b>Categories</b>
 						</li>
 						<li>Add</li>
 						<li>Edit</li>

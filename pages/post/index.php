@@ -64,5 +64,6 @@ if(Input::exists('get')){
 				</div>
 			</div>
 		</div>
+		<?php include path.'assets/php/js.php';?>
 	</body>
 </html>

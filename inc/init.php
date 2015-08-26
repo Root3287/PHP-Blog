@@ -13,7 +13,7 @@ $GLOBALS['config'] = array(
 	"remember" => array(
 		'expiry' => 604800,	
 	),
-	"session" => array ( "token_name" => "token", "cookie_name"=>"cookie", "session_name"=>"session")
+	"session" => array ( "token_name" => "token", "cookie_name"=>"cookie", "session_name"=>"session",),
 );
 
 session_start();

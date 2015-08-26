@@ -34,6 +34,11 @@ class Validation{
 								$this->addError("{$item} already exsits!");
 							}
 							break;
+						case 'numeric':
+							if(!is_numeric($value)){
+								$this->addError("{$item} have to be a number!");
+							}
+							break;
 					}
 				}
 			}

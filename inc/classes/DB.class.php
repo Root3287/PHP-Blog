@@ -51,7 +51,7 @@ class DB{
 	public function get($table, $where){
 		return $this->action('SELECT *', $table, $where);
 	}
-	public function delete($table, $where){
+	public function delete($table, $where=array()){
 		return $this->action('DELETE', $table, $where);
 	}
 	public function insert($table, $fields = array()) {
@@ -73,7 +73,7 @@ class DB{
 		$i = 1;
 		foreach ($fields as $name => $value) {
 			$set .= "{$name} = ?";
-			if ($i < count($fields)) {$set .= ', ';}
+			if ($i < count($fields)) {$set .= ',';}
 			$i++;
 		}
 		$sql = "UPDATE {$table} SET {$set} WHERE id = {$id}";

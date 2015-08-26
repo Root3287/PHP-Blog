@@ -36,7 +36,7 @@ class User{
 		}
 	}
 	public function login($username = null, $pass = null, $remember = false){
-		if(!$username && !$pass && $this->exsit()){
+		if(!$username && !$pass && $this->exist()){
 			Session::put($this->_sessionName, $this->data()->id);
 		}else{
 			$user = $this->find($username);
@@ -64,6 +64,15 @@ class User{
 		return false;	
 	}
 	
+	public function update($name, $group, $username, $id = null){
+		if(!$id && $this->isLoggedIn()){
+			$id = $this->data()->id;
+		}
+		if($this->_db->query("UPDATE `users` SET `name`=?, `group`=?, `username`=? WHERE `id`={$id}", array($name, $group, $username))->error()){
+			throw new Exception("There was an problem updating!");
+		}
+	}
+	
 	public function hasPermission($key) {
 		$group = $this->_db->get('groups', array('id', '=', $this->_data->group));
 		if ($group->count()); {
@@ -74,7 +83,14 @@ class User{
 		}
 		return false;
 	}
-	
+	public function deleteUser($id){
+		if(!$id && $this->isLoggedIn()){
+			$id = $this->data()->id;
+		}
+		if(!$this->_db->delete('users', array('id','=',$id))->count()){
+			throw new Exception('Could not delete user!');
+		}
+	}
 	public function data(){
 		return $this->_data;
 	}

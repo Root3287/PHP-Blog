@@ -2,7 +2,7 @@
 define('path', '../../../');
 require path.'inc/init.php';
 $user = new User();$blog = new Blog();
-if(!$user->hasPermission('delete')){
+if(!$user->hasPermission('Admin')){
 	Session::flash('error', 'You must have delete to proform that!');
 	Redirect::to(path.'index.php');
 }
