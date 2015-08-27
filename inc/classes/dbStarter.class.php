@@ -14,6 +14,8 @@ class dbStarter{
       'CREATE TABLE `posts` (`id` INT(11) NOT NULL AUTO_INCREMENT,`cat_id` INT(11) NOT NULL,`title` VARCHAR(255) NOT NULL,`content` LONGTEXT NOT NULL,`author` TEXT NOT NULL,`date` DATETIME NOT NULL DEFAULT \'0000-00-00 00:00:00\',PRIMARY KEY (`id`)) COLLATE=`latin1_swedish_ci` ENGINE=InnoDB',
       'CREATE TABLE `users` (`id` INT(11) NOT NULL AUTO_INCREMENT,`username` VARCHAR(50) NOT NULL,`password` LONGTEXT NOT NULL,`salt` LONGTEXT NOT NULL, `name` VARCHAR(50) NOT NULL, `group` INT(11) NOT NULL, `joined` DATETIME NOT NULL, PRIMARY KEY (`id`)) COLLATE=`latin1_swedish_ci` ENGINE=InnoDB',
       'CREATE TABLE `user_session` (`id` INT(11) NOT NULL AUTO_INCREMENT, `user_id` INT(11) NOT NULL, `hash` LONGTEXT NOT NULL, PRIMARY KEY (`id`)) COLLATE=`latin1_swedish_ci` ENGINE=InnoDB',
+      'INSERT INTO `groups` (`group_name`, `permissions`) VALUES (`Regular`, `{"Admin":0,"Mod":0,"Create":0,"Post":0}`)',
+      'INSERT INTO `groups` (`group_name`, `permissions`) VALUES (`Administrator`, `{"Admin":1,"Mod":1,"Create":1,"Post":1}`)',
     );
     $i = 0;
     foreach($tables as $table){
