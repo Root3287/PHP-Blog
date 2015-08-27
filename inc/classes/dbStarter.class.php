@@ -21,7 +21,7 @@ class dbStarter{
     foreach($tables as $table){
       $q = $this->_db->query($table)->count();
       if(!$q){
-        $this->addMessage('Table index '.$i.' has been added');
+        $this->addMessage('Query index '.$i.' has been added');
       }else{
         $this->addError('There was an error while adding table at index '.$i);
      }
