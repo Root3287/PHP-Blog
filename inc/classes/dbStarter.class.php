@@ -28,6 +28,21 @@ class dbStarter{
       $i++;
     }
     
+    $insert1 = $this->_db->insert('groups', array(
+    	'group_name' => 'Regular',
+    	'permissions' => '{"Admin":0,"Mod":0,"Create":0,"Post":0}'
+    ));
+    $insert2 = $this->_db->insert('groups', array(
+    		'group_name' => 'Administrator',
+    		'permissions' => '{"Admin":1,"Mod":1,"Create":1,"Post":1}'
+    ));
+    
+    if(!$insert1 && !$insert2){
+    	$this->addError('There was a problem adding rows');
+    }else{
+    	$this->addMessage('Rows added!');
+    }
+    
     if(!empty($this->_emessage)){
       $this->_error = true;
     }
