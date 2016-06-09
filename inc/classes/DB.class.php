@@ -51,7 +51,7 @@ class DB{
 	public function get($table, $where){
 		return $this->action('SELECT *', $table, $where);
 	}
-	public function delete($table, $where=array()){
+	public function delete($table, $where){
 		return $this->action('DELETE', $table, $where);
 	}
 	public function insert($table, $fields = array()) {
@@ -68,12 +68,12 @@ class DB{
 	
 		return false;
 	}
-	public function update($table, $id, $fields = array()) {
+	public function update($table, $id, $fields) {
 		$set = '';
 		$i = 1;
 		foreach ($fields as $name => $value) {
 			$set .= "{$name} = ?";
-			if ($i < count($fields)) {$set .= ',';}
+			if ($i < count($fields)) {$set .= ', ';}
 			$i++;
 		}
 		$sql = "UPDATE {$table} SET {$set} WHERE id = {$id}";
@@ -86,7 +86,7 @@ class DB{
 	public function count() {
 		return $this->_count;
 	}
-	public function first () {
+	public function first() {
 		$results = $this->results();
 		return $results[0];
 	}

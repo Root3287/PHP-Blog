@@ -1,15 +1,16 @@
 <?php
 class Config{
-	public static function get($path = null){
-		if($path){
-			$config = $GLOBALS['config'];
+	public static function get($path = null) {
+		if($path) {
+			$config = (isset($GLOBALS['config']))? $GLOBALS['config']:null;
 			$path = explode('/', $path);
-			foreach ($path as $bit){		
-				if(isset($config[$bit])){
+			foreach($path as $bit){
+				if(isset($config[$bit])) {
 					$config = $config[$bit];
 				}
 			}
-		}
-		return $config;
+			return $config;
+		}	
+		return false;
 	}
 }

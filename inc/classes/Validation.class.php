@@ -1,15 +1,17 @@
 <?php
 class Validation{
-	private $_passed = false, $_errors = array(), $_db;
+	private $_passed = false, $_errors = array(), $_db = null;
 	public function __construct(){
-		$this->_db = DB::getInstance();
+		if(isset($GLOBALS['config'])){
+			$this->_db = DB::getInstance();
+		}
 	}
 	public function check($source, $items = array()){
 		foreach ($items as $item=>$rules){
 			foreach ($rules as$rule =>$rule_value){
 				$value = $source[$item];
 				$item = escape($item);
-				if($rule === 'required' && empty($value) && null){
+				if($rule === 'required' && empty($value)){
 					$this->addError("{$item} is required");
 				}else if(!empty($value)){
 					switch ($rule){
@@ -34,9 +36,9 @@ class Validation{
 								$this->addError("{$item} already exsits!");
 							}
 							break;
-						case 'numeric':
-							if(!is_numeric($value)){
-								$this->addError("{$item} have to be a number!");
+						case 'spaces':
+							if ((count(explode(' ', $value)) > 1) && !$rule_value) {
+  								$this->addError("{$item} may not contain any spaces");
 							}
 							break;
 					}

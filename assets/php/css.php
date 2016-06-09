@@ -1,1 +1,0 @@
-<link href="https://bootswatch.com/cosmo/bootstrap.min.css" rel="stylesheet">

@@ -1,149 +1,163 @@
 <?php
-define('path' , '');
-$page = "home";
-require path.'inc/init.php';
-$user = new User();
-$blog = new Blog();
-?>
-<html>
-	<head>
-		<?php include path.'assets/php/css.php';?>
-	</head>
-	<body>
-		<?php include path.'assets/php/nav.php';?>
-		<div class="container">
-		<?php
-			if(Session::exists('complete')){
-				echo '<div class="alert alert-success">'; 
-				echo Session::flash('complete');
-				echo '</div>';
-			}
-			if(Session::exists('error')){
-				echo '<div class="alert alert-danger">';
-				echo Session::flash('error');
-				echo '</div>';
-			}
-			if(!$user->exist()){
-				echo '<div class="alert alert-dismissible alert-info" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>This site uses cookies!</strong><br>These cookies will enhance your experience on this site.</div>';
-				echo '<div class="alert alert-dismissible alert-info" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>Welcome</strong> Guest! Please <a href="pages/login/index.php" class="alert-link">sign in</a> or <a class="alert-link" href="pages/register/index.php">register</a> to use full functions of this site!</div>';
-			}
-		?>
-			<div class="jumbotron">
-				<h1>Hello!</h1>
-				<?php if(!$user->isLoggedIn()){echo'<h3>Please come and stay for an while</h3>';}else{echo 'Welcome back '.$user->data()->name;}?>
-			</div>
-			<div class="col-md-9">
-				<?php
-					$i=0;
-					foreach ($blog->getPost() as $cat){
-						if($i<=4){
-						echo '<div class="panel panel-primary">';
-							echo '<div class="panel-heading">';
-								echo '<h3 class="panel-title">'.$cat->title.' ~ '.$cat->name.' @ '.$cat->date.' By: '.$cat->author.'</h3>';
-							echo '</div>';
-							echo '<div class="panel-body">';
-								echo $cat->content;
-							echo '</div>';
-						echo '</div>';
-						}
-						$i++;
-					}
-				?>
-			</div>
-			<div class="col-md-3">
-			<?php
-				if($user->isLoggedIn() && $user->hasPermission('Admin')){?>
-					<div class="panel panel-primary">
-						<div class="panel-heading">
-							<h3 class="panel-title">AdminCP Quick Panel</h3>
-						</div>
-						<div class="panel-body">
-							<button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addPost">
- 								Add Post
-							</button>
-							<button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addCat">
- 								Add Cat
-							</button>
-							
-							<div class="modal fade" id="addPost" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-							  <div class="modal-dialog" role="document">
-							    <div class="modal-content">
-							      <div class="modal-header">
-							        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-							        <h4 class="modal-title" id="myModalLabel">Add Post</h4>
-							      </div>
-							      <div class="modal-body">
-							        <form method="post" action="pages/user/admin/addPost.php">
-							        	<div class="form-group">
-							        		<textarea class="form-control" name="title" rows="1" cols="255" placeholder="title"></textarea>
-							        	</div>
-							        	<div class="form-group">
-							        		<textarea class="form-control" name="content" rows="12" cols="255" placeholder="Content"></textarea>
-							        	</div>
-							        	<div class="form-group">
-							        		<select class="form-control" name="cat" id="cat">
-												<option value="<?php echo null;?>" id='cat'>Category</option>
-												<?php 
-													foreach ($blog->getCat() as $cat){
-														echo "<option name='cat' id='cat' value='{$cat->id}'>{$cat->name}</option>";
-													}
-												?>
-											</select>
-							        	</div>
-							        	<input type="hidden" name="token" value="<?php echo Token::generate()?>">
-							        	<div class="form-group">
-							      			<button type="reset" class="btn btn-default">Reset</button>
-							       			<button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-							        		<button type="submit" class="btn btn-primary">Save changes</button>
-							        	</div>
-							        </form>
-							      </div>
-							    </div>
-							  </div>
-							</div>
-							
-							<div class="modal fade" id="addCat" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-							  <div class="modal-dialog" role="document">
-							    <div class="modal-content">
-							      <div class="modal-header">
-							        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-							        <h4 class="modal-title" id="myModalLabel">Add Cat</h4>
-							      </div>
-							      <div class="modal-body">
-							        <form method="post" action="pages/user/admin/addCat.php">
-							        	<div class="form-group">
-							        		<input name="name" placeholder="Cat Name" class="form-control" type="text">
-							        	</div>
-							        	<input type="hidden" name="token" value="<?php echo Token::generate()?>">
-							        	<div class="form-group">
-							      			<button type="reset" class="btn btn-default">Reset</button>
-							       			<button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-							        		<button type="submit" class="btn btn-primary">Save changes</button>
-							        	</div>
-							        </form>
-							      </div>
-							    </div>
-							  </div>
-							</div>
-						</div>
-					</div>
-			<?php
-				}else if(!$user->isLoggedIn()){
-			?>
-					<div class="panel panel-primary">
-						<div class="panel-heading">
-							<h3 class="panel-title">Quick Login Panel</h3>
-						</div>
-						<div class="panel-body">
-						
-							<a href="pages/login/index.php" class="btn btn-primary">Login</a>
-							<a href="pages/register/index.php" class="btn btn-primary">Register</a>
-						</div>
-					</div>
-			<?php }?>
-			</div>
-		</div>
+require 'inc/init.php';
 
-		<?php include path.'assets/php/js.php';?>
-	</body>
-</html>
+$router = new Router();
+
+#echo '<!DOCTYPE HTML>';
+$router->add('/', function (){
+	if(file_exists('pages/install/install.php') || !isset($GLOBALS['config'])){
+		Redirect::to('/install');
+		die();
+	}else{
+		$user = new User();
+		if(!$user->isLoggedIn() || !Settings::get('use_blog_as_homepage')){
+			require 'pages/index.php';
+		}else{
+			Redirect::to('/home');
+		}
+	}
+});
+$router->add('/home(.*)', function(){
+	require 'pages/home.php';
+});
+$router->add('/install(.*)', function(){
+	if(file_exists('pages/install/install.php')){
+		require 'pages/install/install.php';
+	}else{
+		Redirect::to('/');
+	}
+});
+$router->add('/login', function(){
+	require 'pages/login.php';
+});
+$router->add('/register', function(){
+	require 'pages/register.php';
+});
+$router->add('/404', function(){
+	require 'pages/404.php';
+});
+$router->add('/u/(.*)', function($profile_user){
+	require 'pages/profile.php';
+});
+
+$router->add('/test',function(){
+	require 'pages/test.php';
+});
+$router->add('/logout', function(){
+	require 'pages/logout.php';
+});
+$router->add('/p/(.*)', function($pid){
+	require 'pages/post.php';
+});
+
+$router->add('/search', function(){
+	require 'pages/search.php';
+});
+$router->add('/pokes(.*)', function(){
+	require 'pages/pokes.php';
+});
+
+/*
+Admin Stuff
+*/
+$router->add('/admin/', function(){
+	require 'pages/admin/index.php';
+});
+$router->add('/admin/update/', function(){
+	require 'pages/admin/update.php';
+});
+$router->add('/admin/logout/', function(){
+	require 'pages/admin/logout.php';
+});
+$router->add('/admin/settings/', function(){
+	require 'pages/admin/settings.php';
+});
+$router->add('/admin/login/', function(){
+	require 'pages/admin/login.php';
+});
+$router->add('/admin/user(.*)', function(){
+	require 'pages/admin/users.php';
+});
+$router->add('/admin/users/delete/', function(){
+
+});
+$router->add('/admin/users/edit/', function(){
+
+});
+$router->add('/admin', function(){
+	Redirect::to('/admin/');
+});
+$router->add('/admin/notification/', function(){
+	require 'pages/admin/notification.php';	
+});
+/*
+API
+*/
+$router->add('/api/(.*)', function(){
+
+});
+
+/*
+User
+*/
+$router->add('/user/',function(){
+	require 'pages/user/index.php';
+});
+$router->add('/user/profile/(.*)',function(){
+	require 'pages/user/profile.php';
+});
+$router->add('/user/notification/(.*)',function(){
+	require 'pages/user/notification.php';
+});
+$router->add('/user/update/(.*)',function(){
+	require 'pages/user/update.php';
+});
+$router->add('/user',function(){
+	Redirect::to('/user/');
+});
+$router->add('/user/profile',function(){
+	Redirect::to('/user/profile/');
+});
+$router->add('/user/notification',function(){
+	Redirect::to('/user/notification/');
+});
+$router->add('/user/update',function(){
+	Redirect::to('/user/update/');
+});
+$router->add('/user/friend(.*)', function(){
+	require 'pages/user/friends.php';
+});
+$router->add('/user/following(.*)', function(){
+	require 'pages/user/following.php';
+});
+/*
+Action
+*/
+$router->add('/action/profile(.*)', function(){
+	require 'pages/action/profile.php';
+});
+$router->add('/action/reply(.*)', function(){
+	require 'pages/action/reply.php';
+});
+$router->add('/action/like(.*)', function(){
+	require 'pages/action/like.php';
+});
+$router->add('/action/dislike(.*)', function(){
+	require 'pages/action/dislike.php';
+});
+$router->add('/action/status(.*)', function(){
+	require 'pages/action/status.php';
+});
+$router->add('/action/follow(.*)', function(){
+	require 'pages/action/follow.php';
+});
+$router->add('/action/friend(.*)', function(){
+	require 'pages/action/friend.php';
+});
+$router->add('/action/unfriend(.*)', function(){
+	require 'pages/action/unfriend.php';
+});
+$router->add('/action/request(.*)', function(){
+	require 'pages/action/request.php';
+});
+$router->run();
