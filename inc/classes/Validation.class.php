@@ -41,6 +41,24 @@ class Validation{
   								$this->addError("{$item} may not contain any spaces");
 							}
 							break;
+						case 'isactive':
+							$check = $this->_db->get('users', [$item, '=', $value]);
+							if($check->count()){
+								$isActive = $check->first()->active;
+								if($isActive == 0){
+									$this->addError("This username is inactivated.");
+								}
+							}
+							break;
+						case 'isbanned':
+							$check = $this->_db->get('users', [$item, '=', $value]);
+							if($check->count()){
+								$isbanned = $check->first()->banned;
+								if($isbanned == 1){
+									$this->addError("This user has been banned.");
+								}					
+							}
+							break;
 					}
 				}
 			}

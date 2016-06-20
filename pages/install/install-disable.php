@@ -13,8 +13,8 @@ if(!isset($_GET['step'])){
 		<title>Install</title> 
 		<meta name="author" content="Timothy Gibbons">
 		<meta name="copyright" content="Copyright (C) Timothy Gibbons 2015;">
-		<meta name="description" content="Social-Media">
-		<meta name="keywords" content="Social-Media, Beta">
+		<meta name="description" content="Install">
+		<meta name="keywords" content="Installation">
 		<meta charset="UTF-8">
 		<link rel="stylesheet" href="/assets/css/3.css">
 		<!-- Latest compiled and minified JavaScript -->
@@ -58,6 +58,9 @@ if(!isset($_GET['step'])){
 			<a href="/install?step=3" class="btn btn-default <?php if($error): echo "disabled"; endif;?>">Next</a>
 			<?php
 				}elseif($step === 3){
+					if(!empty($GLOBALS['config'])){
+						Redirect::to('?step=4');
+					}
 					if(Input::exists()){
 						$val = new Validation();
 						$validate = $val->check($_POST, [
@@ -65,7 +68,7 @@ if(!isset($_GET['step'])){
 								'required' => true,
 							],
 							'dbPort' =>[
-								'required' => true,
+								
 							],
 							'dbUser'=>[
 								'required' => true,
@@ -84,7 +87,8 @@ if(!isset($_GET['step'])){
 							],
 						]);
 						if($validate->passed()){
-							$mysqli = new mysqli(escape(Input::get('dbAddr').":".Input::get('dbPort')), escape(Input::get('dbUser')), escape(Input::get('dbPass')), escape(Input::get('dbDatabase')));
+							$port = (escape(Input::get('dbPort')) == "" || escape(Input::get('dbPort')) == 3306)? 3306:escape(Input::get('dbPort'));
+							$mysqli = new mysqli(escape(Input::get('dbAddr')).":".$port, escape(Input::get('dbUser')), escape(Input::get('dbPass')), escape(Input::get('dbDatabase')));
 							if($mysqli->connect_error){
 								Session::flash('error', "<div class=\"alert alert-danger\">".$mysqli->connect_error."</div>");
 							}else{
@@ -96,7 +100,7 @@ if(!isset($_GET['step'])){
 													'		"user" => "'.escape(Input::get("dbUser")).'", //root'.PHP_EOL.
 													'		"password" => "'.escape(Input::get("dbPass")).'", //password'.PHP_EOL.
 													'		"db" => "'.escape(Input::get("dbDatabase")).'", //social-media'.PHP_EOL.
-													'		"port" => "'.escape(Input::get("dbPort")).'", //3306'.PHP_EOL.
+													'		"port" => "'.$port.'", //3306'.PHP_EOL.
 													'	),'.PHP_EOL.
 													'	"remember" => array('.PHP_EOL.
 													'		"expiry" => 604800,'.PHP_EOL.
@@ -115,16 +119,66 @@ if(!isset($_GET['step'])){
 									fwrite($file, $insert.$config);
 									fclose($file);
 
-									$db = DB::getInstance();
+									$mysqli = new mysqli(escape(Input::get('dbAddr')).":".escape(Input::get('dbPort')), escape(Input::get('dbUser')), escape(Input::get('dbPass')), escape(Input::get('dbDatabase')));
+									if(!$mysqli->connect_error){
+										$db = DB::getInstance();
 
-									$dbInsert = file_get_contents('pages/install/install.txt');
-
-									if(!$db->query($dbInsert)->error()){
-										echo "<div class=\"alert alert-success\">Databases Installed!</div><br/><a class=\"btn btn-primary\" href=\"?step=5\">Next</a>";
+										$dbInsert = file_get_contents('pages/install/install.txt');
+										$db_error = $db->query($dbInsert)->error();
+										//die(var_dump($db_error));
+										if(!$db_error){
+											echo "<div class=\"alert alert-success\">Databases Installed!</div><br/><a class=\"btn btn-primary\" href=\"?step=5\">Next</a>";
+										}else{
+											echo "<div class=\"alert alert-danger\">Error Installing databases! Error: ".$db_error."; If you think this is an error check the mysql database.</div><br/><div class=\"well\">{$dbInsert}</div>";
+										}
+										$db->insert('settings', [
+											'name'=>'install',
+											'value'=>'1'
+										]);
+										$db->insert('settings', [
+											'name'=>'title',
+											'value'=>'Social-Media'
+										]);
+										$db->insert('settings', [
+											'name'=>'motd',
+											'value'=>''
+										]);
+										$db->insert('settings', [
+											'name'=>'bootstrap-theme',
+											'value'=>'3'
+										]);
+										$db->insert('settings', [
+											'name'=>'debug',
+											'value'=>'On'
+										]);
+										$db->insert('settings', [
+											'name'=>'inverted-nav',
+											'value'=>'1'
+										]);
+										$db->insert('settings', [
+											'name'=> 'version',
+											'value'=> '1.9.0',
+										]);
+										$db->insert('settings', [
+											'name'=>'unique_id',
+											'value'=>substr(str_shuffle("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_"), 0,62),
+										]);
+										$db->insert('settings', [
+											'name'=>'server_stats',
+											'value'=>'false',
+										]);
+										$db->insert('settings', [
+											'group_'=>'standard',
+											'permissions'=>'{}',
+										]);
+										$db->insert('settings', [
+											'group_'=>'Admin',
+											'permissions'=>'{"Admin":1}',
+										]);
 									}else{
-										echo "<div class=\"alert alert-danger\">Error Installing databases!</div><br/><div class=\"well\">{$dbInsert}</div><a class=\"btn btn-primary\" href=\"?step=5\">Next</a>";
+										echo "There was an connection error please try again <a href='/install?step=3'>Go back</a>";
 									}
-
+									//Redirect::to('?step=4');
 									//echo '<script>window.location.replace("/install?step=5");</script>';
 									die();
 								}else{
@@ -188,30 +242,65 @@ if(!isset($_GET['step'])){
 			</form>
 			<?php
 				}elseif($step === 4){
-					$db = DB::getInstance();
+					$mysqli = new mysqli(Config::get('mysql/host').":".Config::get('mysql/port'), Config::get('mysql/user'), Config::get('mysql/password'), Config::get('mysql/db'));
+					if(!$mysqli->connect_error){
+						$db = DB::getInstance();
 
-					$dbInsert = file_get_contents('pages/install/install.txt');
-
-					if(!$db->query($dbInsert)->error()){
-						echo "<div class=\"alert alert-success\">Databases Installed!</div><br/><a class=\"btn btn-primary\" href=\"?step=5\">Next</a>";
+						$dbInsert = file_get_contents('pages/install/install.txt');
+						$db_error = $db->query($dbInsert)->error();
+						//die(var_dump($db_error));
+						if(!$db_error){
+							echo "<div class=\"alert alert-success\">Databases Installed!</div><br/><a class=\"btn btn-primary\" href=\"?step=5\">Next</a>";
+						}else{
+							echo "<div class=\"alert alert-danger\">Error Installing databases! Error: ".$db_error."; If you think this is an error check the mysql database.</div><br/><div class=\"well\">{$dbInsert}</div>";
+						}
+						$db->insert('settings', [
+							'name'=>'install',
+							'value'=>'1'
+						]);
+						$db->insert('settings', [
+							'name'=>'title',
+							'value'=>'Social-Media'
+						]);
+						$db->insert('settings', [
+							'name'=>'motd',
+							'value'=>''
+						]);
+						$db->insert('settings', [
+							'name'=>'bootstrap-theme',
+							'value'=>'3'
+						]);
+						$db->insert('settings', [
+							'name'=>'debug',
+							'value'=>'On'
+						]);
+						$db->insert('settings', [
+							'name'=>'inverted-nav',
+							'value'=>'1'
+						]);
+						$db->insert('settings', [
+							'name'=> 'version',
+							'value'=> '1.9.0',
+						]);
+						$db->insert('settings', [
+							'name'=>'unique_id',
+							'value'=>substr(str_shuffle("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_"), 0,62),
+						]);
+						$db->insert('settings', [
+							'name'=>'server_stats',
+							'value'=>'false',
+						]);
+						$db->insert('settings', [
+							'group_'=>'standard',
+							'permissions'=>'{}',
+						]);
+						$db->insert('settings', [
+							'group_'=>'Admin',
+							'permissions'=>'{"Admin":1}',
+						]);
 					}else{
-						echo "<div class=\"alert alert-danger\">Error Installing databases!</div><br/><div class=\"well\">{$dbInsert}</div>";
+						echo "There was an connection error please try again <a href='/install?step=3'>";
 					}
-
-					$db->insert('settings', [
-						'name'=> 'version',
-						'value'=> '0.1.0',
-					]);
-					$db->insert('settings', [
-						'name'=>'unique_id',
-						'value'=>substr(str_shuffle("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0,62),
-					]);
-					$db->insert('settings', [
-						'name'=>'server_stats',
-						'value'=>'false',
-					]);
-			?>
-			<?php 
 				}elseif ($step === 5) {
 					if(Input::exists()){
 						if(Token::check(Input::get('token'))){
@@ -253,18 +342,24 @@ if(!isset($_GET['step'])){
 											'password'=> $password,
 											'salt' => $salt,
 											'name'=> escape(Input::get('name')),
-											'joined'=> date('Y-m-d- H:i:s'),
+											'joined'=> date('Y-m-d H:i:s'),
 											'group'=> 2,
 											'email'=> escape(Input::get('email')),
 									));
-								}catch (Exception $e){
-									die($e->getMessage());
-								}
-								if($user->login(escape(Input::get('username')), escape(Input::get('password')), false)){
+									if($user->login(escape(Input::get('username')), escape(Input::get('password')), false) && $user->admLogin(escape(Input::get('username')), escape(Input::get('password')), false)){
 									Notification::createMessage('Welcome to the Social-Media '. $user->data()->name, $user->data()->id);
 									Session::flash('complete', '<div class="alert alert-info">You need to delete install-disable.php! Hacker could use this to their advantage!</div>');
 									Redirect::to('?step=6');
 								} 
+								}catch (Exception $e){
+									die($e->getMessage());
+								}
+							}else{
+								echo "<div class='alert alert-danger'>";
+								foreach ($validate->errors() as $error) {
+									echo $error."<br>";
+								}
+								echo "</div>";
 							}
 						}
 					}
@@ -316,7 +411,7 @@ if(!isset($_GET['step'])){
 			<a href="/" class="btn btn-primary">Finish</a>
 			<?php
 				}else{
-					Redirect::to('/404');
+					Redirect::to(404);
 				}
 			?>
 		</div>

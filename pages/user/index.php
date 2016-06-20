@@ -1,3 +1,8 @@
+<?php 
+if(!$user->isLoggedIn()){
+	Redirect::to(404);
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 	<head>

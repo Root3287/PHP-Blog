@@ -8,7 +8,9 @@ if(Input::exists()){
 		$val = new Validation();
 		$val->check($_POST, array(
 			'username' => array(
-				'required' => true
+				'required' => true,
+				'isactive'=> true,
+				'isbanned'=> true,
 			),
 			'password' => array(
 				'required' => true
